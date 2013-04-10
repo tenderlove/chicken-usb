@@ -1,0 +1,7 @@
+(compile -O2 -d0 -s -j usb "usb.scm" -lusb)
+(compile -O2 -d0 -s usb.import.scm)
+
+(install-extension
+  'usb
+  '("usb.so" "usb.import.so")
+  '((version "1.0.0")))
