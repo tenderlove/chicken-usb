@@ -2,13 +2,10 @@
 ;;;; Bindings to libusb
 
 (module usb
-  (usb-find-devices
-   usb-first-bus
-   usb-each-bus
-   usb-bus-each-device
+  (usb-busses
+   usb-devices
    usb-device-idVendor
-   usb-device-idProduct
-   usb-next-bus)
+   usb-device-idProduct)
 
 (import scheme chicken foreign ports)
 
@@ -37,13 +34,14 @@ EOF
   (let ((dev (usb_bus->devices (usb-unwrap-bus bus))))
     (if dev (usb-wrap-device dev) #f)))
 
-(define (usb-bus-each-device cb bus)
-  (let loop ((dev (usb-bus-first-device bus)))
-    (if dev (begin (cb dev) (loop (usb-next-device dev))))))
-
 (define (usb-next-device dev)
   (let ((next (usb_device->next (usb-unwrap-device dev))))
     (if next (usb-wrap-device next) #f)))
+
+(define (usb-devices bus)
+  (let loop ((dev (usb-bus-first-device bus)) (devs '()))
+    (if dev (loop (usb-next-device dev) (cons dev devs))
+            (reverse devs))))
 
 (define (usb-device-idVendor dev)
   (usb_device->idVendor (usb-unwrap-device dev)))
@@ -58,15 +56,15 @@ EOF
   usb-bus?
   (context usb-unwrap-bus))
 
-(define (usb-each-bus cb)
-  (let loop ((bus (usb-first-bus)))
-    (if bus (begin (cb bus) (loop (usb-next-bus bus))) #f)))
-
 (define (usb-next-bus bus)
   (let ((bus (usb_bus->next (usb-unwrap-bus bus))))
     (if bus (usb-wrap-bus bus) #f)))
 
-(define usb-find-devices (foreign-lambda int "usb_find_devices"))
+(define (usb-busses)
+  (let loop ((bus (usb-first-bus)) (busses '()))
+    (if bus (loop (usb-next-bus bus) (cons bus busses))
+            (reverse busses))))
+
 (define (usb-first-bus) (usb-wrap-bus (usb_get_busses)))
 
 ;; C integration

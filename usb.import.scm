@@ -4,13 +4,10 @@
 (##sys#register-compiled-module
   'usb
   (list)
-  '((usb-find-devices . usb#usb-find-devices)
-    (usb-first-bus . usb#usb-first-bus)
-    (usb-each-bus . usb#usb-each-bus)
-    (usb-bus-each-device . usb#usb-bus-each-device)
+  '((usb-busses . usb#usb-busses)
+    (usb-devices . usb#usb-devices)
     (usb-device-idVendor . usb#usb-device-idVendor)
-    (usb-device-idProduct . usb#usb-device-idProduct)
-    (usb-next-bus . usb#usb-next-bus))
+    (usb-device-idProduct . usb#usb-device-idProduct))
   (list)
   (list))
 
