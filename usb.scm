@@ -31,13 +31,17 @@ EOF
   usb-device?
   (context usb-unwrap-device))
 
+(define (usb-bus-first-device bus)
+  (let ((dev (usb_bus->devices (usb-unwrap-bus bus))))
+    (if dev (usb-wrap-device dev) #f)))
+
 (define (usb-bus-each-device cb bus)
-  (let loop ((dev (usb_bus->devices (usb-unwrap-bus bus))))
+  (let loop ((dev (usb-bus-first-device bus)))
     (if dev (begin (cb dev) (loop (usb-next-device dev))))))
 
 (define (usb-next-device dev)
-  (let ((next (usb_device->next dev)))
-    (if next next #f)))
+  (let ((next (usb_device->next (usb-unwrap-device dev))))
+    (if next (usb-wrap-device next) #f)))
 
 ;; busses
 
@@ -57,6 +61,7 @@ EOF
 (define usb-find-devices (foreign-lambda int "usb_find_devices"))
 (define (usb-first-bus) (usb-wrap-bus (usb_get_busses)))
 
+;; C integration
 (define usb_device->next
  (foreign-lambda*
    (c-pointer usb_device) ((c-pointer dev))
