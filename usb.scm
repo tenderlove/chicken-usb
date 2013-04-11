@@ -34,7 +34,7 @@ EOF
 
 (define (usb-next-bus bus)
   (let ((bus (usb_bus->next (usb-unwrap-bus bus))))
-    (if bus (usb-wrap-bus bus))))
+    (if bus (usb-wrap-bus bus) #f)))
 
 (define usb-find-devices (foreign-lambda int "usb_find_devices"))
 (define (usb-first-bus) (usb-wrap-bus (usb_get_busses)))
