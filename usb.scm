@@ -4,6 +4,7 @@
 (module usb
   (usb-busses
    usb-devices
+   usb-open
    usb-device-idVendor
    usb-device-idProduct)
 
@@ -22,6 +23,16 @@ EOF
 )
 
 ;;; support routines
+
+;; handle
+
+(define-record-type usb-handle
+  (usb-wrap-handle context)
+  usb-handle?
+  (context usb-unwrap-handle))
+
+(define (usb-open dev)
+  (usb-wrap-handle (usb_open (usb-unwrap-device dev))))
 
 ;; devices
 
@@ -84,6 +95,11 @@ EOF
  (foreign-lambda*
    int ((c-pointer dev))
    "C_return(((struct usb_device *)dev)->descriptor.idProduct);\n"))
+
+(define usb_open (foreign-lambda*
+                   (c-pointer usb_dev_handle) ((c-pointer dev))
+                   "C_return(usb_open((struct usb_device *)dev));\n"))
+
 
 ;; busses
 (define usb_bus->next

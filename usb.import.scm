@@ -6,6 +6,7 @@
   (list)
   '((usb-busses . usb#usb-busses)
     (usb-devices . usb#usb-devices)
+    (usb-open . usb#usb-open)
     (usb-device-idVendor . usb#usb-device-idVendor)
     (usb-device-idProduct . usb#usb-device-idProduct))
   (list)
