@@ -6,6 +6,8 @@
    usb-first-bus
    usb-each-bus
    usb-bus-each-device
+   usb-device-idVendor
+   usb-device-idProduct
    usb-next-bus)
 
 (import scheme chicken foreign ports)
@@ -43,6 +45,12 @@ EOF
   (let ((next (usb_device->next (usb-unwrap-device dev))))
     (if next (usb-wrap-device next) #f)))
 
+(define (usb-device-idVendor dev)
+  (usb_device->idVendor (usb-unwrap-device dev)))
+
+(define (usb-device-idProduct dev)
+  (usb_device->idProduct (usb-unwrap-device dev)))
+
 ;; busses
 
 (define-record-type usb-bus
@@ -62,11 +70,24 @@ EOF
 (define (usb-first-bus) (usb-wrap-bus (usb_get_busses)))
 
 ;; C integration
+
+;; devices
 (define usb_device->next
  (foreign-lambda*
    (c-pointer usb_device) ((c-pointer dev))
    "C_return(((struct usb_device *)dev)->next);\n"))
 
+(define usb_device->idVendor
+ (foreign-lambda*
+   int ((c-pointer dev))
+   "C_return(((struct usb_device *)dev)->descriptor.idVendor);\n"))
+
+(define usb_device->idProduct
+ (foreign-lambda*
+   int ((c-pointer dev))
+   "C_return(((struct usb_device *)dev)->descriptor.idProduct);\n"))
+
+;; busses
 (define usb_bus->next
  (foreign-lambda*
    (c-pointer usb_bus) ((c-pointer bus))

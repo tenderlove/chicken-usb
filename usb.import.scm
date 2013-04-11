@@ -8,6 +8,8 @@
     (usb-first-bus . usb#usb-first-bus)
     (usb-each-bus . usb#usb-each-bus)
     (usb-bus-each-device . usb#usb-bus-each-device)
+    (usb-device-idVendor . usb#usb-device-idVendor)
+    (usb-device-idProduct . usb#usb-device-idProduct)
     (usb-next-bus . usb#usb-next-bus))
   (list)
   (list))
