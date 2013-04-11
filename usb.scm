@@ -4,6 +4,10 @@
 (module usb
   (usb-busses
    usb-devices
+   usb-type-class
+   usb-recip-device
+   usb-endpoint-out
+   usb-control-msg
    usb-open
    usb-device-idVendor
    usb-device-idProduct)
@@ -24,6 +28,12 @@ EOF
 
 ;;; support routines
 
+;; constants
+
+(define usb-type-class (foreign-value "USB_TYPE_CLASS" int))
+(define usb-recip-device (foreign-value "USB_RECIP_DEVICE" int))
+(define usb-endpoint-out (foreign-value "USB_ENDPOINT_OUT" int))
+
 ;; handle
 
 (define-record-type usb-handle
@@ -33,6 +43,17 @@ EOF
 
 (define (usb-open dev)
   (usb-wrap-handle (usb_open (usb-unwrap-device dev))))
+
+(define (usb-control-msg dev requesttype request value index bytes timeout)
+  (let ((size (string-length bytes)))
+  (usb_control_msg (usb-unwrap-handle dev)
+                   requesttype
+                   request
+                   value
+                   index
+                   bytes
+                   size
+                   timeout)))
 
 ;; devices
 
@@ -113,4 +134,17 @@ EOF
    "C_return(((struct usb_bus *)bus)->devices);\n"))
 
 (define usb_get_busses (foreign-lambda (c-pointer usb_bus) "usb_get_busses"))
+
+;; devices
+(define usb_control_msg (foreign-lambda
+                          int
+                          "usb_control_msg"
+                          c-pointer
+                          int
+                          int
+                          int
+                          int
+                          scheme-pointer
+                          int
+                          int))
 )
