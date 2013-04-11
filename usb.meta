@@ -6,4 +6,5 @@
  (license "MIT")
  (category net)
  (doc-from-wiki)
- (files "usb.scm" "usb.release-info" "usb.meta" "usb.setup"))
+ (test-depends test)
+ (files "usb.scm" "usb.release-info" "usb.meta" "usb.setup" "tests/run.scm"))
