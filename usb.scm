@@ -24,10 +24,7 @@ EOF
 
 ;;; support routines
 
-(define-record-type usb-bus
-  (usb-wrap-bus context)
-  usb-bus?
-  (context usb-unwrap-bus))
+;; devices
 
 (define-record-type usb-device
   (usb-wrap-device context)
@@ -41,6 +38,13 @@ EOF
 (define (usb-next-device dev)
   (let ((next (usb_device->next dev)))
     (if next next #f)))
+
+;; busses
+
+(define-record-type usb-bus
+  (usb-wrap-bus context)
+  usb-bus?
+  (context usb-unwrap-bus))
 
 (define (usb-each-bus cb)
   (let loop ((bus (usb-first-bus)))
