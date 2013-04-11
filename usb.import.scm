@@ -7,6 +7,7 @@
   '((usb-find-devices . usb#usb-find-devices)
     (usb-first-bus . usb#usb-first-bus)
     (usb-each-bus . usb#usb-each-bus)
+    (usb-bus-each-device . usb#usb-bus-each-device)
     (usb-next-bus . usb#usb-next-bus))
   (list)
   (list))
