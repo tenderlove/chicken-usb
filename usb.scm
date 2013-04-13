@@ -4,6 +4,8 @@
 (module usb
   (usb-busses
    usb-devices
+   usb-init
+   usb-exit
    usb-type-class
    usb-recip-device
    usb-endpoint-out
@@ -34,6 +36,16 @@ EOF
 (define usb-type-class (foreign-value "USB_TYPE_CLASS" int))
 (define usb-recip-device (foreign-value "USB_RECIP_DEVICE" int))
 (define usb-endpoint-out (foreign-value "USB_ENDPOINT_OUT" int))
+
+;; context
+
+(define-record-type usb-context
+  (usb-wrap-context context)
+  usb-context
+  (context usb-unwrap-context))
+
+(define (usb-init) (usb-wrap-context (libusb_init)))
+(define (usb-exit ctx) (libusb_exit (usb-unwrap-context ctx)))
 
 ;; handle
 
@@ -121,6 +133,15 @@ EOF
 (define usb_open (foreign-lambda*
                    (c-pointer usb_dev_handle) ((c-pointer dev))
                    "C_return(usb_open((struct usb_device *)dev));\n"))
+
+(define libusb_init (foreign-lambda*
+                   c-pointer ()
+                   "libusb_context * ctx;\n"
+                   "libusb_init(&ctx);\n"
+                   "C_return(ctx);\n"))
+
+(define libusb_exit (foreign-lambda*
+                   void ((c-pointer ctx)) "libusb_exit(ctx);\n"))
 
 
 ;; busses
