@@ -6,6 +6,7 @@
    usb-devices
    usb-init
    usb-exit
+   usb-set-debug!
    usb-type-class
    usb-recip-device
    usb-endpoint-out
@@ -46,6 +47,7 @@ EOF
 
 (define (usb-init) (usb-wrap-context (libusb_init)))
 (define (usb-exit ctx) (libusb_exit (usb-unwrap-context ctx)))
+(define (usb-set-debug! ctx v) (libusb_set_debug (usb-unwrap-context ctx) v))
 
 ;; handle
 
@@ -142,6 +144,10 @@ EOF
 
 (define libusb_exit (foreign-lambda*
                    void ((c-pointer ctx)) "libusb_exit(ctx);\n"))
+
+(define libusb_set_debug (foreign-lambda*
+                   void ((c-pointer ctx) (int value))
+                                         "libusb_set_debug(ctx, value);\n"))
 
 
 ;; busses

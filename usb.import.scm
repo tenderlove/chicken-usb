@@ -8,6 +8,7 @@
     (usb-devices . usb#usb-devices)
     (usb-init . usb#usb-init)
     (usb-exit . usb#usb-exit)
+    (usb-set-debug! . usb#usb-set-debug!)
     (usb-type-class . usb#usb-type-class)
     (usb-recip-device . usb#usb-recip-device)
     (usb-endpoint-out . usb#usb-endpoint-out)
