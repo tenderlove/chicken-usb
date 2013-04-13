@@ -16,6 +16,7 @@
 
 #>
 #include <usb.h>
+#include <libusb.h>
 #include <errno.h>
 <#
 

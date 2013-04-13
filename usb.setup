@@ -1,5 +1,10 @@
-(compile -O2 -d0 -s -j usb "usb.scm" -lusb)
-(compile -O2 -d0 -s usb.import.scm)
+(use srfi-1)
+(use srfi-13)
+(let ((cflags (with-input-from-pipe "pkg-config --cflags libusb-1.0" read-line))
+      (lflags (with-input-from-pipe "pkg-config --libs libusb-1.0" read-line)))
+
+(compile -O2 -d0 -s -j usb "usb.scm" ,cflags ,lflags -lusb)
+(compile -O2 -d0 -s usb.import.scm))
 
 (install-extension
   'usb
