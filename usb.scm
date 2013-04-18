@@ -42,12 +42,13 @@
 ;; handle
 
 (define-record-type usb-handle
-  (usb-wrap-handle context)
+  (usb-wrap-handle handle dev)
   usb-handle?
-  (context usb-unwrap-handle))
+  (handle usb-unwrap-handle)
+  (dev usb-unwrap-handle-dev))
 
 (define (usb-open dev)
-  (usb-wrap-handle (libusb_open (usb-unwrap-device dev))))
+  (usb-wrap-handle (libusb_open (usb-unwrap-device dev)) dev))
 
 (define (usb-control-msg dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
