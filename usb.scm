@@ -23,6 +23,8 @@
 (define usb-recip-device (foreign-value "USB_RECIP_DEVICE" int))
 (define usb-endpoint-out (foreign-value "USB_ENDPOINT_OUT" int))
 
+(define-foreign-type libusb_device (c-pointer "libusb_device"))
+
 ;; context
 
 (define-record-type usb-context
@@ -67,7 +69,9 @@
   (ctx usb-unwrap-device-ctx))
 
 (define (usb-devices ctx)
-        (map (lambda (dev) (usb-wrap-device dev ctx))
+        (map (lambda (dev)
+               (set-finalizer! dev libusb_unref_device)
+               (usb-wrap-device dev ctx))
              (libusb_get_device_list (usb-unwrap-context ctx) '())))
 
 ;; C integration
@@ -103,6 +107,9 @@ if (!libusb_open(dev, &handle)) {
 }
 "))
 
+(define libusb_unref_device (foreign-lambda* void ((libusb_device dev))
+                                             "libusb_unref_device(dev);\n"))
+
 (define libusb_init (foreign-lambda*
                    c-pointer ()
                    "libusb_context * ctx;\n"
@@ -115,7 +122,6 @@ if (!libusb_open(dev, &handle)) {
 (define libusb_set_debug (foreign-lambda*
                    void ((c-pointer ctx) (int value))
                                          "libusb_set_debug(ctx, value);\n"))
-
 
 ;; devices
 (define usb_control_msg (foreign-lambda
