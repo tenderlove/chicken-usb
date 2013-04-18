@@ -45,7 +45,7 @@
   (context usb-unwrap-handle))
 
 (define (usb-open dev)
-  (usb-wrap-handle (usb_open (usb-unwrap-device dev))))
+  (usb-wrap-handle (libusb_open (usb-unwrap-device dev))))
 
 (define (usb-control-msg dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
@@ -92,24 +92,16 @@ libusb_free_device_list(devices, 0);
 C_return(seed);
 "))
 
-(define usb_device->next
- (foreign-lambda*
-   (c-pointer usb_device) ((c-pointer dev))
-   "C_return(((struct usb_device *)dev)->next);\n"))
-
-(define usb_device->idVendor
- (foreign-lambda*
-   int ((c-pointer dev))
-   "C_return(((struct usb_device *)dev)->descriptor.idVendor);\n"))
-
-(define usb_device->idProduct
- (foreign-lambda*
-   int ((c-pointer dev))
-   "C_return(((struct usb_device *)dev)->descriptor.idProduct);\n"))
-
-(define usb_open (foreign-lambda*
-                   (c-pointer usb_dev_handle) ((c-pointer dev))
-                   "C_return(usb_open((struct usb_device *)dev));\n"))
+(define libusb_open (foreign-lambda*
+                   (c-pointer libusb_device_handle) ((c-pointer dev))
+"
+libusb_device_handle * handle;
+if (!libusb_open(dev, &handle)) {
+  C_return(handle);
+} else {
+  C_return(C_SCHEME_FALSE);
+}
+"))
 
 (define libusb_init (foreign-lambda*
                    c-pointer ()
