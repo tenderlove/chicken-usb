@@ -28,7 +28,6 @@
 (import scheme chicken foreign ports)
 
 #>
-#include <usb.h>
 #include <libusb.h>
 #include <errno.h>
 <#

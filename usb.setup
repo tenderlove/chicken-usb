@@ -3,7 +3,7 @@
 (let ((cflags (with-input-from-pipe "pkg-config --cflags libusb-1.0" read-line))
       (lflags (with-input-from-pipe "pkg-config --libs libusb-1.0" read-line)))
 
-(compile -O2 -d0 -s -j usb "usb.scm" ,cflags ,lflags -lusb)
+(compile -O2 -d0 -s -j usb "usb.scm" ,cflags ,lflags)
 (compile -O2 -d0 -s usb.import.scm))
 
 (install-extension
