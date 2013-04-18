@@ -27,12 +27,7 @@
 
 (import scheme chicken foreign ports)
 
-#>
-#include <libusb.h>
-#include <errno.h>
-<#
-
-;;; support routines
+(foreign-declare "#include <libusb.h>")
 
 ;; constants
 
