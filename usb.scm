@@ -89,10 +89,14 @@
   (usb-wrap-handle (libusb_open (usb-unwrap-device dev)) dev))
 
 (define (usb-claim-interface! handle)
-  (libusb_claim_interface (usb-unwrap-handle handle) 0))
+  (let ((ret (libusb_claim_interface (usb-unwrap-handle handle) 0)))
+    ; FIXME: we should probably raise an exception
+    (if (= 0 ret) #t #f)))
 
 (define (usb-release-interface! handle)
-  (libusb_release_interface (usb-unwrap-handle handle) 0))
+  (let ((ret (libusb_release_interface (usb-unwrap-handle handle) 0)))
+    ; FIXME: we should probably raise an exception
+    (if (= 0 ret) #t #f)))
 
 (define (usb-control-transfer dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
@@ -197,29 +201,15 @@ if (!libusb_open(dev, &handle)) {
                                             "libusb_unref_device"
                                             libusb_device))
 
-(define libusb_claim_interface (foreign-lambda* scheme-object
-                                                ((libusb_device_handle dev)
-                                                 (int interface_number))
-"
-if (!libusb_claim_interface(dev, interface_number)) {
-  C_return(C_SCHEME_TRUE);
-} else {
-  // FIXME
-  C_return(C_SCHEME_FALSE);
-}
-"))
+(define libusb_claim_interface (foreign-lambda int
+                                               "libusb_claim_interface"
+                                               libusb_device_handle
+                                               int))
 
-(define libusb_release_interface (foreign-lambda* scheme-object
-                                                ((libusb_device_handle dev)
-                                                 (int interface_number))
-"
-if (!libusb_release_interface(dev, interface_number)) {
-  C_return(C_SCHEME_TRUE);
-} else {
-  // FIXME
-  C_return(C_SCHEME_FALSE);
-}
-"))
+(define libusb_release_interface (foreign-lambda int
+                                                 "libusb_release_interface"
+                                                 libusb_device_handle
+                                                 int))
 
 (define libusb_init (foreign-lambda*
                    c-pointer ()
