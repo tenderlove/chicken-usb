@@ -6,7 +6,10 @@
    usb-init
    usb-set-debug!
    usb-open
+   usb-device-descriptor
    usb-claim-interface!
+   usb-device-descriptor.idVendor
+   usb-device-descriptor.idProduct
    usb-release-interface!)
 
 (import scheme chicken foreign ports)
@@ -84,6 +87,41 @@
                (usb-wrap-device dev ctx))
              (libusb_get_device_list (usb-unwrap-context ctx) '())))
 
+(define-record-type usb-device-descriptor
+  (usb-make-device-descriptor bLength
+                              bDescriptorType
+                              bcdUSB
+                              bDeviceClass
+                              bDeviceSubClass
+                              bDeviceProtocol
+                              bMaxPacketSize0
+                              idVendor
+                              idProduct
+                              bcdDevice
+                              iManufacturer
+                              iProduct
+                              iSerialNumber
+                              bNumConfigurations)
+  usb-device-descriptor?
+  (bLength            usb-device-descriptor.bLength)
+  (bDescriptorType    usb-device-descriptor.bDescriptorType)
+  (bcdUSB             usb-device-descriptor.bcdUSB)
+  (bDeviceClass       usb-device-descriptor.bDeviceClass)
+  (bDeviceSubClass    usb-device-descriptor.bDeviceSubClass)
+  (bDeviceProtocol    usb-device-descriptor.bDeviceProtocol)
+  (bMaxPacketSize0    usb-device-descriptor.bMaxPacketSize0)
+  (idVendor           usb-device-descriptor.idVendor)
+  (idProduct          usb-device-descriptor.idProduct)
+  (bcdDevice          usb-device-descriptor.bcdDevice)
+  (iManufacturer      usb-device-descriptor.iManufacturer)
+  (iProduct           usb-device-descriptor.iProduct)
+  (iSerialNumber      usb-device-descriptor.iSerialNumber)
+  (bNumConfigurations usb-device-descriptor.bNumConfigurations))
+
+(define (usb-device-descriptor dev)
+  (libusb_get_device_descriptor (usb-unwrap-device dev)
+                                usb-make-device-descriptor))
+
 ;; C integration
 
 ;; devices
@@ -120,27 +158,27 @@ if (!libusb_open(dev, &handle)) {
 (define libusb_unref_device (foreign-lambda* void ((libusb_device dev))
                                              "libusb_unref_device(dev);\n"))
 
-(define libusb_claim_interface (foreign-lambda* void 
+(define libusb_claim_interface (foreign-lambda* scheme-object 
                                                 ((libusb_device_handle dev)
                                                  (int interface_number))
 "
 if (!libusb_claim_interface(dev, interface_number)) {
-  return C_SCHEME_TRUE;
+  C_return(C_SCHEME_TRUE);
 } else {
   // FIXME
-  return C_SCHEME_FALSE;
+  C_return(C_SCHEME_FALSE);
 }
 "))
 
-(define libusb_release_interface (foreign-lambda* void 
+(define libusb_release_interface (foreign-lambda* scheme-object 
                                                 ((libusb_device_handle dev)
                                                  (int interface_number))
 "
 if (!libusb_release_interface(dev, interface_number)) {
-  return C_SCHEME_TRUE;
+  C_return(C_SCHEME_TRUE);
 } else {
   // FIXME
-  return C_SCHEME_FALSE;
+  C_return(C_SCHEME_FALSE);
 }
 "))
 
@@ -156,6 +194,33 @@ if (!libusb_release_interface(dev, interface_number)) {
 (define libusb_set_debug (foreign-lambda*
                    void ((c-pointer ctx) (int value))
                                          "libusb_set_debug(ctx, value);\n"))
+
+(define libusb_get_device_descriptor (foreign-safe-lambda*
+                                       scheme-object
+                                       ((libusb_device dev)
+                                        (scheme-object init))
+"
+struct libusb_device_descriptor desc;
+if (!libusb_get_device_descriptor(dev, &desc)) {
+  C_save(C_fix(desc.bLength));
+  C_save(C_fix(desc.bDescriptorType));
+  C_save(C_fix(desc.bcdUSB));
+  C_save(C_fix(desc.bDeviceClass));
+  C_save(C_fix(desc.bDeviceSubClass));
+  C_save(C_fix(desc.bDeviceProtocol));
+  C_save(C_fix(desc.bMaxPacketSize0));
+  C_save(C_fix(desc.idVendor));
+  C_save(C_fix(desc.idProduct));
+  C_save(C_fix(desc.bcdDevice));
+  C_save(C_fix(desc.iManufacturer));
+  C_save(C_fix(desc.iProduct));
+  C_save(C_fix(desc.iSerialNumber));
+  C_save(C_fix(desc.bNumConfigurations));
+  C_return(C_callback(init, 14));
+} else {
+  C_return(C_SCHEME_FALSE);
+}
+"))
 
 ;; devices
 (define usb_control_msg (foreign-lambda

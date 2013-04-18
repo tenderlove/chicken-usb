@@ -7,10 +7,16 @@
   (test-assert (usb-set-debug! (usb-init) 3))
 )
 
+(define handle (usb-init))
+
 (test-group "with handle"
-  (let ((handle (usb-init)))
-    (test-assert (< 0 (length (usb-devices handle))))
-    (test-assert (usb-open (car (usb-devices handle)))))
+  (test-assert (< 0 (length (usb-devices handle))))
+  (test-assert (usb-open (car (usb-devices handle))))
+  (test-assert (map usb-device-descriptor (usb-devices handle)))
+  (test-assert (map usb-device-descriptor.idVendor
+                    (map usb-device-descriptor (usb-devices handle))))
+  (test-assert (map usb-device-descriptor.idProduct
+                    (map usb-device-descriptor (usb-devices handle))))
 )
 
 (test-end)
