@@ -10,8 +10,8 @@
    usb-device-bus-number
    usb-device-address
    usb-claim-interface!
-   usb-device-descriptor.idVendor
-   usb-device-descriptor.idProduct
+   usb-device.idVendor
+   usb-device.idProduct
    usb-release-interface!)
 
 (import scheme chicken foreign ports)
@@ -111,20 +111,20 @@
                               iSerialNumber
                               bNumConfigurations)
   usb-device-descriptor?
-  (bLength            usb-device-descriptor.bLength)
-  (bDescriptorType    usb-device-descriptor.bDescriptorType)
-  (bcdUSB             usb-device-descriptor.bcdUSB)
-  (bDeviceClass       usb-device-descriptor.bDeviceClass)
-  (bDeviceSubClass    usb-device-descriptor.bDeviceSubClass)
-  (bDeviceProtocol    usb-device-descriptor.bDeviceProtocol)
-  (bMaxPacketSize0    usb-device-descriptor.bMaxPacketSize0)
-  (idVendor           usb-device-descriptor.idVendor)
-  (idProduct          usb-device-descriptor.idProduct)
-  (bcdDevice          usb-device-descriptor.bcdDevice)
-  (iManufacturer      usb-device-descriptor.iManufacturer)
-  (iProduct           usb-device-descriptor.iProduct)
-  (iSerialNumber      usb-device-descriptor.iSerialNumber)
-  (bNumConfigurations usb-device-descriptor.bNumConfigurations))
+  (bLength            usb-device.bLength)
+  (bDescriptorType    usb-device.bDescriptorType)
+  (bcdUSB             usb-device.bcdUSB)
+  (bDeviceClass       usb-device.bDeviceClass)
+  (bDeviceSubClass    usb-device.bDeviceSubClass)
+  (bDeviceProtocol    usb-device.bDeviceProtocol)
+  (bMaxPacketSize0    usb-device.bMaxPacketSize0)
+  (idVendor           usb-device.idVendor)
+  (idProduct          usb-device.idProduct)
+  (bcdDevice          usb-device.bcdDevice)
+  (iManufacturer      usb-device.iManufacturer)
+  (iProduct           usb-device.iProduct)
+  (iSerialNumber      usb-device.iSerialNumber)
+  (bNumConfigurations usb-device.bNumConfigurations))
 
 (define (usb-device-descriptor dev)
   (libusb_get_device_descriptor (usb-unwrap-device dev)

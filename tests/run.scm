@@ -14,9 +14,9 @@
   (test-assert (< 0 (length devices)))
   (test-assert (usb-open (car devices)))
   (test-assert (map usb-device-descriptor devices))
-  (test-assert (map usb-device-descriptor.idVendor
+  (test-assert (map usb-device.idVendor
                     (map usb-device-descriptor devices)))
-  (test-assert (map usb-device-descriptor.idProduct
+  (test-assert (map usb-device.idProduct
                     (map usb-device-descriptor devices)))
   (test-assert (map usb-device-bus-number devices))
   (test-assert (map usb-device-address devices))
