@@ -2,17 +2,10 @@
 ;;;; Bindings to libusb
 
 (module usb
-  (usb-busses
-   usb-devices
+  (usb-devices
    usb-init
    usb-set-debug!
-   usb-type-class
-   usb-recip-device
-   usb-endpoint-out
-   usb-control-msg
-   usb-open
-   usb-device-idVendor
-   usb-device-idProduct)
+   usb-open)
 
 (import scheme chicken foreign ports)
 
@@ -68,45 +61,14 @@
 ;; devices
 
 (define-record-type usb-device
-  (usb-wrap-device context)
+  (usb-wrap-device dev ctx)
   usb-device?
-  (context usb-unwrap-device))
-
-(define (usb-bus-first-device bus)
-  (let ((dev (usb_bus->devices (usb-unwrap-bus bus))))
-    (if dev (usb-wrap-device dev) #f)))
-
-(define (usb-next-device dev)
-  (let ((next (usb_device->next (usb-unwrap-device dev))))
-    (if next (usb-wrap-device next) #f)))
+  (dev usb-unwrap-device)
+  (ctx usb-unwrap-device-ctx))
 
 (define (usb-devices ctx)
-        (map usb-wrap-device
+        (map (lambda (dev) (usb-wrap-device dev ctx))
              (libusb_get_device_list (usb-unwrap-context ctx) '())))
-
-(define (usb-device-idVendor dev)
-  (usb_device->idVendor (usb-unwrap-device dev)))
-
-(define (usb-device-idProduct dev)
-  (usb_device->idProduct (usb-unwrap-device dev)))
-
-;; busses
-
-(define-record-type usb-bus
-  (usb-wrap-bus context)
-  usb-bus?
-  (context usb-unwrap-bus))
-
-(define (usb-next-bus bus)
-  (let ((bus (usb_bus->next (usb-unwrap-bus bus))))
-    (if bus (usb-wrap-bus bus) #f)))
-
-(define (usb-busses)
-  (let loop ((bus (usb-first-bus)) (busses '()))
-    (if bus (loop (usb-next-bus bus) (cons bus busses))
-            (reverse busses))))
-
-(define (usb-first-bus) (usb-wrap-bus (usb_get_busses)))
 
 ;; C integration
 

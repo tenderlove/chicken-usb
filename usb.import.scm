@@ -4,17 +4,10 @@
 (##sys#register-compiled-module
   'usb
   (list)
-  '((usb-busses . usb#usb-busses)
-    (usb-devices . usb#usb-devices)
+  '((usb-devices . usb#usb-devices)
     (usb-init . usb#usb-init)
     (usb-set-debug! . usb#usb-set-debug!)
-    (usb-type-class . usb#usb-type-class)
-    (usb-recip-device . usb#usb-recip-device)
-    (usb-endpoint-out . usb#usb-endpoint-out)
-    (usb-control-msg . usb#usb-control-msg)
-    (usb-open . usb#usb-open)
-    (usb-device-idVendor . usb#usb-device-idVendor)
-    (usb-device-idProduct . usb#usb-device-idProduct))
+    (usb-open . usb#usb-open))
   (list)
   (list))
 
