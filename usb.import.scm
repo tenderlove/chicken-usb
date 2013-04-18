@@ -7,7 +7,9 @@
   '((usb-devices . usb#usb-devices)
     (usb-init . usb#usb-init)
     (usb-set-debug! . usb#usb-set-debug!)
-    (usb-open . usb#usb-open))
+    (usb-open . usb#usb-open)
+    (usb-claim-interface! . usb#usb-claim-interface!)
+    (usb-release-interface! . usb#usb-release-interface!))
   (list)
   (list))
 

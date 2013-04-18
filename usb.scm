@@ -5,7 +5,9 @@
   (usb-devices
    usb-init
    usb-set-debug!
-   usb-open)
+   usb-open
+   usb-claim-interface!
+   usb-release-interface!)
 
 (import scheme chicken foreign ports)
 
@@ -24,6 +26,7 @@
 (define usb-endpoint-out (foreign-value "USB_ENDPOINT_OUT" int))
 
 (define-foreign-type libusb_device (c-pointer "libusb_device"))
+(define-foreign-type libusb_device_handle (c-pointer "libusb_device_handle"))
 
 ;; context
 
@@ -49,6 +52,12 @@
 
 (define (usb-open dev)
   (usb-wrap-handle (libusb_open (usb-unwrap-device dev)) dev))
+
+(define (usb-claim-interface! handle)
+  (libusb_claim_interface (usb-unwrap-handle handle) 0))
+
+(define (usb-release-interface! handle)
+  (libusb_release_interface (usb-unwrap-handle handle) 0))
 
 (define (usb-control-msg dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
@@ -110,6 +119,30 @@ if (!libusb_open(dev, &handle)) {
 
 (define libusb_unref_device (foreign-lambda* void ((libusb_device dev))
                                              "libusb_unref_device(dev);\n"))
+
+(define libusb_claim_interface (foreign-lambda* void 
+                                                ((libusb_device_handle dev)
+                                                 (int interface_number))
+"
+if (!libusb_claim_interface(dev, interface_number)) {
+  return C_SCHEME_TRUE;
+} else {
+  // FIXME
+  return C_SCHEME_FALSE;
+}
+"))
+
+(define libusb_release_interface (foreign-lambda* void 
+                                                ((libusb_device_handle dev)
+                                                 (int interface_number))
+"
+if (!libusb_release_interface(dev, interface_number)) {
+  return C_SCHEME_TRUE;
+} else {
+  // FIXME
+  return C_SCHEME_FALSE;
+}
+"))
 
 (define libusb_init (foreign-lambda*
                    c-pointer ()
