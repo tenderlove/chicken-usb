@@ -192,10 +192,11 @@ if (!libusb_open(dev, &handle)) {
 }
 "))
 
-(define libusb_unref_device (foreign-lambda* void ((libusb_device dev))
-                                             "libusb_unref_device(dev);\n"))
+(define libusb_unref_device (foreign-lambda void
+                                            "libusb_unref_device"
+                                            libusb_device))
 
-(define libusb_claim_interface (foreign-lambda* scheme-object 
+(define libusb_claim_interface (foreign-lambda* scheme-object
                                                 ((libusb_device_handle dev)
                                                  (int interface_number))
 "
@@ -207,7 +208,7 @@ if (!libusb_claim_interface(dev, interface_number)) {
 }
 "))
 
-(define libusb_release_interface (foreign-lambda* scheme-object 
+(define libusb_release_interface (foreign-lambda* scheme-object
                                                 ((libusb_device_handle dev)
                                                  (int interface_number))
 "
