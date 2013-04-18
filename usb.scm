@@ -4,8 +4,19 @@
 (module usb
   (usb-devices
    usb-init
+   usb::request-type-standard
+   usb::request-type-class
+   usb::request-type-vendor
+   usb::request-type-reserved
+   usb::recipient-device
+   usb::recipient-interface
+   usb::recipient-endpoint
+   usb::recipient-other
+   usb::endpoint-out
+   usb::endpoint-in
    usb-set-debug!
    usb-open
+   usb-control-transfer
    usb-device-descriptor
    usb-device-bus-number
    usb-device-address
@@ -26,9 +37,28 @@
 
 ;; constants
 
-(define usb-type-class (foreign-value "USB_TYPE_CLASS" int))
-(define usb-recip-device (foreign-value "USB_RECIP_DEVICE" int))
-(define usb-endpoint-out (foreign-value "USB_ENDPOINT_OUT" int))
+(define usb::request-type-standard
+  (foreign-value "LIBUSB_REQUEST_TYPE_STANDARD" int))
+(define usb::request-type-class
+  (foreign-value "LIBUSB_REQUEST_TYPE_CLASS" int))
+(define usb::request-type-vendor
+  (foreign-value "LIBUSB_REQUEST_TYPE_VENDOR" int))
+(define usb::request-type-reserved
+  (foreign-value "LIBUSB_REQUEST_TYPE_RESERVED" int))
+
+(define usb::recipient-device
+  (foreign-value "LIBUSB_RECIPIENT_DEVICE" int))
+(define usb::recipient-interface
+  (foreign-value "LIBUSB_RECIPIENT_INTERFACE" int))
+(define usb::recipient-endpoint
+  (foreign-value "LIBUSB_RECIPIENT_ENDPOINT" int))
+(define usb::recipient-other
+  (foreign-value "LIBUSB_RECIPIENT_OTHER" int))
+
+(define usb::endpoint-out
+  (foreign-value "LIBUSB_ENDPOINT_OUT" int))
+(define usb::endpoint-in
+  (foreign-value "LIBUSB_ENDPOINT_IN" int))
 
 (define-foreign-type libusb_device (c-pointer "libusb_device"))
 (define-foreign-type libusb_device_handle (c-pointer "libusb_device_handle"))
@@ -64,9 +94,9 @@
 (define (usb-release-interface! handle)
   (libusb_release_interface (usb-unwrap-handle handle) 0))
 
-(define (usb-control-msg dev requesttype request value index bytes timeout)
+(define (usb-control-transfer dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
-  (usb_control_msg (usb-unwrap-handle dev)
+  (libusb_control_transfer (usb-unwrap-handle dev)
                    requesttype
                    request
                    value
@@ -239,10 +269,10 @@ if (!libusb_get_device_descriptor(dev, &desc)) {
                                                libusb_device))
 
 ;; devices
-(define usb_control_msg (foreign-lambda
+(define libusb_control_transfer (foreign-lambda
                           int
-                          "usb_control_msg"
-                          c-pointer
+                          "libusb_control_transfer"
+                          libusb_device_handle
                           int
                           int
                           int
