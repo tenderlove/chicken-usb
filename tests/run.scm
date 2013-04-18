@@ -8,15 +8,18 @@
 )
 
 (define handle (usb-init))
+(define devices (usb-devices handle))
 
-(test-group "with handle"
-  (test-assert (< 0 (length (usb-devices handle))))
-  (test-assert (usb-open (car (usb-devices handle))))
-  (test-assert (map usb-device-descriptor (usb-devices handle)))
+(test-group "devices"
+  (test-assert (< 0 (length devices)))
+  (test-assert (usb-open (car devices)))
+  (test-assert (map usb-device-descriptor devices))
   (test-assert (map usb-device-descriptor.idVendor
-                    (map usb-device-descriptor (usb-devices handle))))
+                    (map usb-device-descriptor devices)))
   (test-assert (map usb-device-descriptor.idProduct
-                    (map usb-device-descriptor (usb-devices handle))))
+                    (map usb-device-descriptor devices)))
+  (test-assert (map usb-device-bus-number devices))
+  (test-assert (map usb-device-address devices))
 )
 
 (test-end)

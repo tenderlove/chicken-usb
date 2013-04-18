@@ -7,6 +7,8 @@
    usb-set-debug!
    usb-open
    usb-device-descriptor
+   usb-device-bus-number
+   usb-device-address
    usb-claim-interface!
    usb-device-descriptor.idVendor
    usb-device-descriptor.idProduct
@@ -86,6 +88,12 @@
                (set-finalizer! dev libusb_unref_device)
                (usb-wrap-device dev ctx))
              (libusb_get_device_list (usb-unwrap-context ctx) '())))
+
+(define (usb-device-bus-number dev)
+  (libusb_get_bus_number (usb-unwrap-device dev)))
+
+(define (usb-device-address dev)
+  (libusb_get_device_address (usb-unwrap-device dev)))
 
 (define-record-type usb-device-descriptor
   (usb-make-device-descriptor bLength
@@ -221,6 +229,14 @@ if (!libusb_get_device_descriptor(dev, &desc)) {
   C_return(C_SCHEME_FALSE);
 }
 "))
+
+(define libusb_get_bus_number (foreign-lambda int
+                                              "libusb_get_bus_number"
+                                              libusb_device))
+
+(define libusb_get_device_address (foreign-lambda int
+                                               "libusb_get_device_address"
+                                               libusb_device))
 
 ;; devices
 (define usb_control_msg (foreign-lambda
