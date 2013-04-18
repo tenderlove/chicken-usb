@@ -61,6 +61,7 @@
 
 (define-foreign-type libusb_device (c-pointer "libusb_device"))
 (define-foreign-type libusb_device_handle (c-pointer "libusb_device_handle"))
+(define-foreign-type libusb_context (c-pointer "libusb_context"))
 
 ;; context
 
@@ -226,12 +227,14 @@ if (!libusb_release_interface(dev, interface_number)) {
                    "libusb_init(&ctx);\n"
                    "C_return(ctx);\n"))
 
-(define libusb_exit (foreign-lambda*
-                   void ((c-pointer ctx)) "libusb_exit(ctx);\n"))
+(define libusb_exit (foreign-lambda void
+                                    "libusb_exit"
+                                    libusb_context))
 
-(define libusb_set_debug (foreign-lambda*
-                   void ((c-pointer ctx) (int value))
-                                         "libusb_set_debug(ctx, value);\n"))
+(define libusb_set_debug (foreign-lambda void
+                                         "libusb_set_debug"
+                                         libusb_context
+                                         int))
 
 (define libusb_get_device_descriptor (foreign-safe-lambda*
                                        scheme-object
