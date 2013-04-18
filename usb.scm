@@ -5,7 +5,6 @@
   (usb-busses
    usb-devices
    usb-init
-   usb-exit
    usb-set-debug!
    usb-type-class
    usb-recip-device
@@ -23,13 +22,6 @@
 #include <errno.h>
 <#
 
-(foreign-code #<<EOF
-usb_init();
-usb_find_busses();
-usb_find_devices();
-EOF
-)
-
 ;;; support routines
 
 ;; constants
@@ -45,7 +37,10 @@ EOF
   usb-context
   (context usb-unwrap-context))
 
-(define (usb-init) (usb-wrap-context (libusb_init)))
+(define (usb-init)
+  (set-finalizer!
+    (usb-wrap-context (libusb_init)) usb-exit))
+
 (define (usb-exit ctx) (libusb_exit (usb-unwrap-context ctx)))
 (define (usb-set-debug! ctx v) (libusb_set_debug (usb-unwrap-context ctx) v))
 
@@ -85,10 +80,9 @@ EOF
   (let ((next (usb_device->next (usb-unwrap-device dev))))
     (if next (usb-wrap-device next) #f)))
 
-(define (usb-devices bus)
-  (let loop ((dev (usb-bus-first-device bus)) (devs '()))
-    (if dev (loop (usb-next-device dev) (cons dev devs))
-            (reverse devs))))
+(define (usb-devices ctx)
+        (map usb-wrap-device
+             (libusb_get_device_list (usb-unwrap-context ctx) '())))
 
 (define (usb-device-idVendor dev)
   (usb_device->idVendor (usb-unwrap-device dev)))
@@ -117,6 +111,25 @@ EOF
 ;; C integration
 
 ;; devices
+(define libusb_get_device_list (foreign-safe-lambda* scheme-object
+                                                     ((c-pointer ctx)
+                                                      (scheme-object seed))
+"
+ssize_t count;
+ssize_t i;
+libusb_device ** devices;
+count = libusb_get_device_list(ctx, &devices);
+for(i = 0; i < count; i++) {
+  libusb_device *device = devices[i];
+  C_word *_pair = C_alloc(C_SIZEOF_PAIR);
+  C_word *a = C_alloc(C_SIZEOF_POINTER);
+  C_word ptr = C_mpointer(&a, device);
+  seed = C_pair(&_pair, ptr, seed);
+}
+libusb_free_device_list(devices, 0);
+C_return(seed);
+"))
+
 (define usb_device->next
  (foreign-lambda*
    (c-pointer usb_device) ((c-pointer dev))
