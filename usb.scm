@@ -117,19 +117,6 @@ if (!libusb_open(dev, &handle)) {
                                          "libusb_set_debug(ctx, value);\n"))
 
 
-;; busses
-(define usb_bus->next
- (foreign-lambda*
-   (c-pointer usb_bus) ((c-pointer bus))
-   "C_return(((struct usb_bus *)bus)->next);\n"))
-
-(define usb_bus->devices
- (foreign-lambda*
-   (c-pointer usb_device) ((c-pointer bus))
-   "C_return(((struct usb_bus *)bus)->devices);\n"))
-
-(define usb_get_busses (foreign-lambda (c-pointer usb_bus) "usb_get_busses"))
-
 ;; devices
 (define usb_control_msg (foreign-lambda
                           int
