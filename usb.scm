@@ -3,7 +3,7 @@
 
 (module usb
   (usb-devices
-   usb-init
+   usb-make-context
    usb::request-type-standard
    usb::request-type-class
    usb::request-type-vendor
@@ -14,6 +14,17 @@
    usb::recipient-other
    usb::endpoint-out
    usb::endpoint-in
+   usb::request-get-status
+   usb::request-clear-feature
+   usb::request-set-feature
+   usb::request-set-address
+   usb::request-get-descriptor
+   usb::request-set-descriptor
+   usb::request-get-configuration
+   usb::request-set-configuration
+   usb::request-get-interface
+   usb::request-set-interface
+   usb::request-synch-frame
    usb-set-debug!
    usb-open
    usb-control-transfer
@@ -30,6 +41,29 @@
 (foreign-declare "#include <libusb.h>")
 
 ;; constants
+
+(define usb::request-get-status
+  (foreign-value "LIBUSB_REQUEST_GET_STATUS" int))
+(define usb::request-clear-feature
+  (foreign-value "LIBUSB_REQUEST_CLEAR_FEATURE" int))
+(define usb::request-set-feature
+  (foreign-value "LIBUSB_REQUEST_SET_FEATURE" int))
+(define usb::request-set-address
+  (foreign-value "LIBUSB_REQUEST_SET_ADDRESS" int))
+(define usb::request-get-descriptor
+  (foreign-value "LIBUSB_REQUEST_GET_DESCRIPTOR" int))
+(define usb::request-set-descriptor
+  (foreign-value "LIBUSB_REQUEST_SET_DESCRIPTOR" int))
+(define usb::request-get-configuration
+  (foreign-value "LIBUSB_REQUEST_GET_CONFIGURATION" int))
+(define usb::request-set-configuration
+  (foreign-value "LIBUSB_REQUEST_SET_CONFIGURATION" int))
+(define usb::request-get-interface
+  (foreign-value "LIBUSB_REQUEST_GET_INTERFACE" int))
+(define usb::request-set-interface
+  (foreign-value "LIBUSB_REQUEST_SET_INTERFACE" int))
+(define usb::request-synch-frame
+  (foreign-value "LIBUSB_REQUEST_SYNCH_FRAME" int))
 
 (define usb::request-type-standard
   (foreign-value "LIBUSB_REQUEST_TYPE_STANDARD" int))
@@ -65,7 +99,7 @@
   usb-context
   (context usb-unwrap-context))
 
-(define (usb-init)
+(define (usb-make-context)
   (set-finalizer!
     (usb-wrap-context (libusb_init)) usb-exit))
 

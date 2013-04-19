@@ -3,11 +3,11 @@
 (test-begin "usb")
 
 (test-group "handle"
-  (test-assert (usb-init))
-  (test-assert (usb-set-debug! (usb-init) 3))
+  (test-assert (usb-make-context))
+  (test-assert (usb-set-debug! (usb-make-context) 3))
 )
 
-(define handle (usb-init))
+(define handle (usb-make-context))
 (define devices (usb-devices handle))
 
 (test-group "devices"
