@@ -1,5 +1,3 @@
-(use srfi-1)
-(use srfi-13)
 (let ((cflags (with-input-from-pipe "pkg-config --cflags libusb-1.0" read-line))
       (lflags (with-input-from-pipe "pkg-config --libs libusb-1.0" read-line)))
 
