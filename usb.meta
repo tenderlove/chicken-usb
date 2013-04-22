@@ -4,7 +4,7 @@
  (synopsis "Bindings to libusb")
  (author "Aaron Patterson")
  (license "MIT")
- (category net)
+ (category io)
  (doc-from-wiki)
  (test-depends test)
  (files "usb.scm" "usb.release-info" "usb.meta" "usb.setup" "tests/run.scm"))
