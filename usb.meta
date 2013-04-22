@@ -6,3 +6,5 @@
  (category io)
  (foreign-depends libusb-1.0)
  (test-depends test))
+
+; vim: syntax=scheme

@@ -10,3 +10,5 @@
   'usb
   '("usb.so" "usb.import.so")
   '((version "0.1.0")))
+
+; vim: syntax=scheme
