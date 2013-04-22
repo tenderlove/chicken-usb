@@ -34,6 +34,8 @@
    usb-claim-interface!
    usb-device.idVendor
    usb-device.idProduct
+   usb-device.iSerialNumber
+   usb-device.iManufacturer
    usb-release-interface!)
 
 (import scheme chicken foreign ports)
