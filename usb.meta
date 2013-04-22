@@ -1,10 +1,8 @@
 ;;; usb.meta -*- Hen -*-
 
-((egg "usb.egg")
- (synopsis "Bindings to libusb")
+((synopsis "Bindings to libusb")
  (author "Aaron Patterson")
  (license "MIT")
  (category io)
- (doc-from-wiki)
- (test-depends test)
- (files "usb.scm" "usb.release-info" "usb.meta" "usb.setup" "tests/run.scm"))
+ (foreign-depends libusb)
+ (test-depends test))
