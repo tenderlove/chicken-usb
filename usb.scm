@@ -27,6 +27,7 @@
    usb::request-synch-frame
    usb-set-debug!
    usb-open
+   usb-close
    usb-control-transfer
    usb-device-descriptor
    usb-device-bus-number
@@ -118,6 +119,9 @@
 
 (define (usb-open dev)
   (usb-wrap-handle (libusb_open (usb-unwrap-device dev)) dev))
+
+(define (usb-close handle)
+  (libusb_close (usb-unwrap-handle handle)))
 
 (define (usb-claim-interface! handle)
   (let ((ret (libusb_claim_interface (usb-unwrap-handle handle) 0)))
@@ -216,6 +220,10 @@ for(i = 0; i < count; i++) {
 libusb_free_device_list(devices, 0);
 C_return(seed);
 "))
+
+(define libusb_close (foreign-lambda void
+                                     "libusb_close"
+                                     libusb_device_handle))
 
 (define libusb_open (foreign-lambda*
                    (c-pointer libusb_device_handle) ((c-pointer dev))
