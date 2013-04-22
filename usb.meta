@@ -4,5 +4,5 @@
  (author "Aaron Patterson")
  (license "MIT")
  (category io)
- (foreign-depends libusb)
+ (foreign-depends libusb-1.0)
  (test-depends test))
