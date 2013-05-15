@@ -251,7 +251,7 @@ if (!libusb_open(dev, &handle)) {
                                                  int))
 
 (define libusb_init (foreign-lambda*
-                   c-pointer ()
+                   libusb_context ()
                    "libusb_context * ctx;\n"
                    "libusb_init(&ctx);\n"
                    "C_return(ctx);\n"))
