@@ -126,12 +126,12 @@
 (define (usb-claim-interface! handle)
   (let ((ret (libusb_claim_interface (usb-unwrap-handle handle) 0)))
     ; FIXME: we should probably raise an exception
-    (if (= 0 ret) #t #f)))
+    (= 0 ret)))
 
 (define (usb-release-interface! handle)
   (let ((ret (libusb_release_interface (usb-unwrap-handle handle) 0)))
     ; FIXME: we should probably raise an exception
-    (if (= 0 ret) #t #f)))
+    (= 0 ret)))
 
 (define (usb-control-transfer dev requesttype request value index bytes timeout)
   (let ((size (string-length bytes)))
