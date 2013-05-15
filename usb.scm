@@ -91,9 +91,9 @@
 (define usb::endpoint-in
   (foreign-value "LIBUSB_ENDPOINT_IN" int))
 
-(define-foreign-type libusb_device (c-pointer "libusb_device"))
-(define-foreign-type libusb_device_handle (c-pointer "libusb_device_handle"))
-(define-foreign-type libusb_context (c-pointer "libusb_context"))
+(define-foreign-type libusb_device (nonnull-c-pointer "libusb_device"))
+(define-foreign-type libusb_device_handle (nonnull-c-pointer "libusb_device_handle"))
+(define-foreign-type libusb_context (nonnull-c-pointer "libusb_context"))
 
 ;; context
 
@@ -103,8 +103,9 @@
   (context usb-unwrap-context))
 
 (define (usb-make-context)
-  (set-finalizer!
-    (usb-wrap-context (libusb_init)) usb-exit))
+  (let ((ctx (libusb_init)))
+    (set-finalizer!
+      (usb-wrap-context ctx) usb-exit)))
 
 (define (usb-exit ctx) (libusb_exit (usb-unwrap-context ctx)))
 (define (usb-set-debug! ctx v) (libusb_set_debug (usb-unwrap-context ctx) v))
@@ -118,7 +119,8 @@
   (dev usb-unwrap-handle-dev))
 
 (define (usb-open dev)
-  (usb-wrap-handle (libusb_open (usb-unwrap-device dev)) dev))
+  (let ((handle (libusb_open (usb-unwrap-device dev))))
+    (usb-wrap-handle handle dev)))
 
 (define (usb-close handle)
   (libusb_close (usb-unwrap-handle handle)))
@@ -203,7 +205,7 @@
 
 ;; devices
 (define libusb_get_device_list (foreign-safe-lambda* scheme-object
-                                                     ((c-pointer ctx)
+                                                     ((libusb_context ctx)
                                                       (scheme-object seed))
 "
 ssize_t count;
@@ -226,13 +228,13 @@ C_return(seed);
                                      libusb_device_handle))
 
 (define libusb_open (foreign-lambda*
-                   (c-pointer libusb_device_handle) ((c-pointer dev))
+                   libusb_device_handle ((libusb_device dev))
 "
 libusb_device_handle * handle;
 if (!libusb_open(dev, &handle)) {
   C_return(handle);
 } else {
-  C_return(C_SCHEME_FALSE);
+  C_return(NULL);
 }
 "))
 
@@ -252,9 +254,14 @@ if (!libusb_open(dev, &handle)) {
 
 (define libusb_init (foreign-lambda*
                    libusb_context ()
-                   "libusb_context * ctx;\n"
-                   "libusb_init(&ctx);\n"
-                   "C_return(ctx);\n"))
+"
+libusb_context * ctx;
+if (0 == libusb_init(&ctx)) {
+  C_return(ctx);
+} else {
+  C_return(NULL);
+}
+"))
 
 (define libusb_exit (foreign-lambda void
                                     "libusb_exit"
