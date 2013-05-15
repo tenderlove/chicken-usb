@@ -103,12 +103,8 @@
   (context usb-unwrap-context))
 
 (define (usb-make-context)
-  (let* ((ptr (make-context))
-         (errcode (libusb_init ptr)))
-    (if (not (= 0 errcode))
-        (error "could not initialize usb context")
-        (set-finalizer!
-          (usb-wrap-context ptr) usb-exit))))
+  (set-finalizer!
+    (usb-wrap-context (libusb_init)) usb-exit))
 
 (define (usb-exit ctx) (libusb_exit (usb-unwrap-context ctx)))
 (define (usb-set-debug! ctx v) (libusb_set_debug (usb-unwrap-context ctx) v))
@@ -254,14 +250,11 @@ if (!libusb_open(dev, &handle)) {
                                                  libusb_device_handle
                                                  int))
 
-(define make-context (foreign-lambda*
-                       libusb_context ()
-                       "libusb_context * ctx = NULL;\nC_return(ctx);\n"))
-
-(define libusb_init (foreign-lambda
-                      int
-                      "libusb_init"
-                      (c-pointer libusb_context)))
+(define libusb_init (foreign-lambda*
+                   libusb_context ()
+                   "libusb_context * ctx;\n"
+                   "libusb_init(&ctx);\n"
+                   "C_return(ctx);\n"))
 
 (define libusb_exit (foreign-lambda void
                                     "libusb_exit"
