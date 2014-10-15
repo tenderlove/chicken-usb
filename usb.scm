@@ -217,7 +217,7 @@ for(i = 0; i < count; i++) {
   C_word *_pair = C_alloc(C_SIZEOF_PAIR);
   C_word *a = C_alloc(C_SIZEOF_POINTER);
   C_word ptr = C_mpointer(&a, device);
-  seed = C_pair(&_pair, ptr, seed);
+  seed = C_a_pair(&_pair, ptr, seed);
 }
 libusb_free_device_list(devices, 0);
 C_return(seed);
